@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\InfoPost;
+use App\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,7 +30,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        // get all tags
+        $tags = Tag::all();
+
+        return view('posts.create', compact('tags'));
     }
 
     /**
@@ -48,7 +53,7 @@ class PostController extends Controller
         
         //SET POST SLUG
         $data['slug'] = Str::slug($data['title'], '-');
-        dd('$data');
+        // dd('$data');
 
         //Se img è presente
         if(!empty($data['path_img'])) {
@@ -60,7 +65,16 @@ class PostController extends Controller
         $newPost->fill($data); //Fillable del Model
         $saved = $newPost->save();
 
+        //<-----------InfoPost record tabella
+        // $data = ['post_id'] = $newPost->id;
+        // $newInfo = new InfoPost();
+        // $newInfo->fill($data);
+        // $infoSaved = $newInfo->save();
+
         if($saved) {
+            if (!empty($data['tags'])) {
+                $newPost->tags()->attach($data['tags']);
+            }
             return redirect()->route('posts.index');
         } else {
             return redirect()->route('homepage');

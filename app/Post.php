@@ -13,4 +13,21 @@ class Post extends Model
         'slug',
         'path_img',
     ];
+
+    // DB RELATIONS
+
+    //post -info_post
+    public function infoPost() {
+        return $this->hasOne('App\InfoPost');
+    }
+
+    //post - comments
+    public function comments() {
+        return $this->hasMany('App\Comment');
+    }
+
+    //post - tags
+    public function tags() {
+        return $this->belongsToMany('App\Tag');
+    }
 }
